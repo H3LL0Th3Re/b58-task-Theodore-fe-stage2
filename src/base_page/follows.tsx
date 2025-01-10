@@ -1,10 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, Text, Flex, Button, Center, Spinner } from "@chakra-ui/react";
 import { Avatar } from "@/components/ui/avatar";
 import { jwtDecode } from "jwt-decode";
 import * as Tabs from "@radix-ui/react-tabs";
 import Swal from "sweetalert2";
 import { useFollowStore } from "../FollowStore";
+
+type User = {
+  id: string;
+  username: string;
+  fullname?: string;
+  profile_pic?: string;
+  bio?: string;
+  isFollowing?: boolean;
+  isFollowed?: boolean;
+};
+
 
 const FollowPage = () => {
   const defaultProfilePic = "https://tse1.mm.bing.net/th?id=OIP.Br5ihkw7BCVc-bdbrr-PxgHaHa&pid=Api&P=0&h=180";
@@ -80,7 +91,7 @@ const FollowPage = () => {
       );
       const data = await response.json();
       // Add isFollowing property to each user
-      const usersWithFollowState = data.map((user) => ({
+      const usersWithFollowState = data.map((user:User) => ({
         ...user,
         isFollowing: tab === "Following" ? true : user.isFollowing
       }));
@@ -145,7 +156,7 @@ const FollowPage = () => {
           Follows
         </Text>
       </Flex>
-      <Tabs.Root value={tab} onValueChange={(value) => setTab(value)}>
+      <Tabs.Root value={tab} onValueChange={(value:string) => setTab(value)}>
         {/* Tabs.List remains the same */}
         <Tabs.List
           style={{
