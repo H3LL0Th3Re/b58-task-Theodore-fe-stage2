@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Box, 
   Heading, 
@@ -13,9 +13,8 @@ import{
 } from '@/components/ui/alert';
 import {
   FormControl,
-  FormLabel
 } from "@chakra-ui/form-control"
-import axios from 'axios';
+
 
 type RegisterFormData = {
   email: string;
@@ -33,7 +32,7 @@ function Register() {
     password: '',
   });
 
-  const [loading, setLoading] = useState(false);
+  
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -43,7 +42,7 @@ function Register() {
   };
   const handleSubmitFetch = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    
     setError(null);
     setSuccess(false);
 
@@ -70,12 +69,10 @@ function Register() {
         fullname: '',
         password: '',
       });
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error:', error);
       setError(error.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
   
   return (
