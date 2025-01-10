@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { Card, GridItem, IconButton, Input } from "@chakra-ui/react"
+import { GridItem, IconButton, Input } from "@chakra-ui/react"
 import {
     Box,
     Button,
@@ -9,8 +9,6 @@ import {
     VStack,
     Heading,
     HStack,
-    Link,
-    Icon,
     Image,
   } from "@chakra-ui/react";
 import { Avatar } from "@/components/ui/avatar"
@@ -26,16 +24,13 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 // import { useUser } from '@/userContext';
-import { FaGithub, FaLinkedin, FaFacebookF, FaInstagram } from 'react-icons/fa';
-import { getAllusers } from '@/services/users.services';
-import { getAllThreads } from '@/services/thread.services';
+
 import { ThreadsType } from '@/types/threads.types';
-import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 import { Grid } from '@chakra-ui/layout';
 import { useNavigate } from 'react-router-dom';
 import { IoHeart, IoHeartOutline } from 'react-icons/io5';
 import { useStore } from "@/useStore";
-import axios, { all } from 'axios';
+import axios from 'axios';
 import * as Tabs from "@radix-ui/react-tabs";
 import { useThreadStore } from '@/useThreadStore';
 import { jwtDecode } from 'jwt-decode';
@@ -49,17 +44,11 @@ const ProfileDetail = () => {
   const {
       isLikedByUser,
       threads,
-      content,
-      setContent,
-      setImageFile,
+      
       fetchThreadUser,
-      handlePost,
-      handleEdit,
-      handleDelete,
+      
       toggleLike,
-      getLikeCount,
-      imagePreview,
-      imageFile
+      
     } = useThreadStore();
   const [followCounts, setFollowCounts] = useState({ followers: 0, following: 0 });
  const [editedData, setEditedData] = useState({
@@ -76,8 +65,7 @@ const ProfileDetail = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isEditingImage, setIsEditingImage] = useState(false);
-  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+  
   const defaultProfilePic = "https://tse1.mm.bing.net/th?id=OIP.Br5ihkw7BCVc-bdbrr-PxgHaHa&pid=Api&P=0&h=180";
   const defaultBannerPic = "https://tse1.mm.bing.net/th?id=OIP.Kg6YNNbgzoyNhJ_oTdr54gHaCT&pid=Api&P=0&h=180";
   
