@@ -1,23 +1,17 @@
-import React from 'react';
-import { Box, VStack, Heading, Button, Text, Flex} from '@chakra-ui/react';
-import { Avatar } from "@/components/ui/avatar"
+
+import { Box, Heading, Button} from '@chakra-ui/react';
+
 import { FaHome, FaSearch, FaHeart, FaUser, FaSignOutAlt } from 'react-icons/fa';
-import {
-    PopoverArrow,
-    PopoverBody,
-    PopoverContent,
-    PopoverRoot,
-    PopoverTrigger,
-  } from "@/components/ui/popover"
-import { useState } from "react"
-import { Input } from "@chakra-ui/react"
+
+
+
 import { useUser } from "@/userContext";
 import { useNavigate } from 'react-router-dom';
 // import { useThreadStore } from '@/useThreadStore';
 function Sidebar() {
     const { logout } = useUser();
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false)
+    
 
     const handleLogout = () => {
         logout(); // Call the logout function
