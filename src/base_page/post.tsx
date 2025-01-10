@@ -17,7 +17,7 @@ import { IoHeart, IoHeartOutline, IoEllipsisVertical } from "react-icons/io5";
 import { LuImage } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { useThreadStore } from "@/useThreadStore";
-import swal from 'sweetalert'
+// import swal from 'sweetalert'
 // import { useUser } from "@/userContext";
 import {
   MenuContent,
