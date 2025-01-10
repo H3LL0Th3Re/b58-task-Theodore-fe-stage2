@@ -104,13 +104,13 @@ function DetailedImage() {
   
 
   const handleReplySubmit = async () => {
-    if (!post?.thread.id) {
+    if (!post || !post?.thread.id) {
       console.error("No thread ID available");
       return;
     }
 
     try {
-      await handleReply(post?.thread.id.toString());
+      await handleReply(post.thread.id.toString());
       // console.log(replies)
       
       // Refresh the post data after successful reply
@@ -127,6 +127,10 @@ function DetailedImage() {
     
     await toggleLike(post.thread.id.toString());
     // Refresh the post data to get updated like status
+    if (!postId) {
+        console.error("Invalid postId: postId is null or undefined.");
+        return;
+      }
     try{
         const updatedPost = await fetchThreadbyId(postId);
         if(updatedPost){
