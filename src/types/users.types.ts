@@ -6,7 +6,7 @@ export interface UsersType {
     bio: string | null;
     profile_pic: string | null;
     banner_pic: string | null;
-    isFollowed?: boolean;  
+    isFollowed: boolean;  
     createdAt?: string;
     updatedAt?: string;
   }
