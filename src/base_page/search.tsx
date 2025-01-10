@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Input,
@@ -14,17 +14,26 @@ import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import { useFollowStore } from "../FollowStore";
 
+
+interface JwtPayload {
+  id: string;
+  [key: string]: any;
+}
 function SearchPage() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   
   const { searchResults, setSearchResults, toggleSearchResultFollow } = useFollowStore();
   const defaultProfilePic = "https://tse1.mm.bing.net/th?id=OIP.Br5ihkw7BCVc-bdbrr-PxgHaHa&pid=Api&P=0&h=180";
-  const token = localStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const currentUserId = decodedToken.id;
+  
 
   const handleSearch = async () => {
+
+    const token = localStorage.getItem("token");
+    if(!token){
+      return;
+    }
+    const currentUserId = (jwtDecode(token) as JwtPayload).id;
     if (!query.trim()) return;
   
     setLoading(true);
@@ -38,7 +47,7 @@ function SearchPage() {
   
       if (response.ok) {
         const data = await response.json();
-        const filteredResults = data.filter((user) => user.id !== currentUserId);
+        const filteredResults = data.filter((user: any) => user.id !== currentUserId);
         
         // Get the current follow states from existing search results
         const existingFollowStates = new Map(
