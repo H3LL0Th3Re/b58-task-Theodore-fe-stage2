@@ -127,8 +127,17 @@ function DetailedImage() {
     
     await toggleLike(post.thread.id.toString());
     // Refresh the post data to get updated like status
-    const updatedPost = await fetchThreadbyId(postId);
-    setPost(updatedPost);
+    try{
+        const updatedPost = await fetchThreadbyId(postId);
+        if(updatedPost){
+            setPost(updatedPost);
+        }else{
+            console.error("updated post is null or undefined");
+        }
+    }catch (error){
+        console.log("Failed to fetch updated post: ", error)
+    }
+    
   };
   console.log("post: ", post);
   
@@ -147,12 +156,12 @@ function DetailedImage() {
           </Text>
           <Text mt="2">{post?.thread.content}</Text>
           
-          {post?.thread.image && (
+          {post.thread.image && (
             <DialogRoot>
               <DialogTrigger asChild>
                 <Box mt="4" rounded="lg" overflow="hidden">
                   <Image
-                    src={post?.thread.image}
+                    src={post.thread.image ?? ""}
                     alt="Post"
                     width= "100%"
                     objectFit= "cover"
@@ -291,7 +300,13 @@ function DetailedImage() {
                       accept="image/*"
                       style={{ display: "none" }}
                       name="image"
-                      onChange={(e) => setImageFile(e.target.files[0])}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setImageFile(e.target.files[0]);
+                        } else {
+                          console.error("No file selected");
+                        }
+                      }}
                   />
                   </IconButton>
               </HStack>
