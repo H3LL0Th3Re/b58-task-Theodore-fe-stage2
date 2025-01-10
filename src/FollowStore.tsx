@@ -24,17 +24,17 @@ export const useFollowStore = create<FollowStore>((set) => ({
   searchResults: [],
   setUsers: (users) => set({ users }),
   setSearchResults: (users) => set({ searchResults: users }),
-  toggleUserFollow: (userId) => 
+  toggleUserFollow: (userId: string) => 
     set((state) => ({
-      users: state.users.map((user) =>
+      users: state.users.map((user: User) =>
         user.id === userId 
           ? { ...user, isFollowing: !user.isFollowing }
           : user
       ),
     })),
-  toggleSearchResultFollow: (userId) =>
+  toggleSearchResultFollow: (userId: string) =>
     set((state) => ({
-      searchResults: state.searchResults.map((user) =>
+      searchResults: state.searchResults.map((user: User) =>
         user.id === userId
           ? { ...user, isFollowed: !user.isFollowed }
           : user
