@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { Card, Input } from "@chakra-ui/react"
+import { Input } from "@chakra-ui/react"
 import {
     Box,
     Button,
@@ -10,7 +10,6 @@ import {
     Heading,
     HStack,
     Link,
-    Icon,
     Image,
   } from "@chakra-ui/react";
 import { Avatar } from "@/components/ui/avatar"
@@ -26,9 +25,8 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 // import { useUser } from '@/userContext';
-import { FaGithub, FaLinkedin, FaFacebookF, FaInstagram } from 'react-icons/fa';
-import { getAllusers } from '@/services/users.services';
-import { getAllThreads } from '@/services/thread.services';
+
+
 import { UsersType } from '@/types/users.types';
 import { useStore } from '@/useStore';
 import axios from "axios";
@@ -52,8 +50,7 @@ function Profile() {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isEditingImage, setIsEditingImage] = useState(false);
-  const [isEditingAvatar, setIsEditingAvatar] = useState(false);
+  
   const [suggestedUsers, setSuggestedUsers] = useState<UsersType[]>([]);
   const defaultProfilePic = "https://tse1.mm.bing.net/th?id=OIP.Br5ihkw7BCVc-bdbrr-PxgHaHa&pid=Api&P=0&h=180";
   const defaultBannerPic = "https://tse1.mm.bing.net/th?id=OIP.Kg6YNNbgzoyNhJ_oTdr54gHaCT&pid=Api&P=0&h=180";
@@ -75,8 +72,7 @@ function Profile() {
     }
   }, [user]);
 
-  const token = localStorage.getItem("token");
-  const current_user = jwtDecode(token).id;
+  
 
   // Initial data fetch
   useEffect(() => {
@@ -85,6 +81,7 @@ function Profile() {
         await fetchUser();
         setLoading(false);
       } catch (error) {
+        console.log(error);
         setError('Failed to fetch user data');
         setLoading(false);
       }
@@ -98,6 +95,10 @@ function Profile() {
     const fetchSuggestedUsers = async () => {
       try {
         const token = localStorage.getItem("token");
+        if(!token){
+          return;
+        }
+        const current_user = jwtDecode(token).id;
         const response = await fetch(`http://localhost:3000/api/users/${current_user}/suggest-users`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,6 +107,7 @@ function Profile() {
         const data = await response.json();
         setSuggestedUsers(data);
       } catch (error) {
+        console.log(error);
         setError('An error occurred while fetching suggested users');
       } finally {
         setLoading(false);
@@ -128,6 +130,11 @@ function Profile() {
 
   useEffect(() => {
     const fetchFollowCounts = async () => {
+      const token = localStorage.getItem("token");
+        if(!token){
+          return;
+        }
+        const current_user = jwtDecode(token).id;
       try {
         console.log("the user: ", current_user);
         const counts = await getFollowCounts(current_user.toString());
@@ -141,7 +148,7 @@ function Profile() {
     };
   
     fetchFollowCounts();
-  }, [current_user]);
+  }, []);
 
   console.log(followCounts)
 
@@ -250,17 +257,7 @@ function Profile() {
       });
     }
   };
-  // const handleCancel = () => {
-  //   if (user) {
-  //     setEditedData({
-  //       fullname: user.fullname || '',
-  //       username: user.username || '',
-  //       bio: user.bio || '',
-  //       profile_pic: user.profile_pic || '',
-  //       banner_pic: user.banner_pic || '',
-  //     });
-  //   }
-  // };
+  
 
   const handleFollowToggle = async (userId: string, isFollowed: boolean) => {
     const updatedUsers = suggestedUsers.map((user) =>
