@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Text,
@@ -7,7 +7,7 @@ import {
   VStack,
   HStack,
   Image,
-  Textarea,
+  
   IconButton,
   Flex
 } from "@chakra-ui/react";
@@ -15,43 +15,55 @@ import {Divider} from "@chakra-ui/layout"
 import { Avatar } from "@/components/ui/avatar"
 import { useParams } from "react-router-dom";
 import axios from "axios";
+
 import {
-  MenuContent,
-  MenuItem,
-  MenuRoot,
-  MenuTrigger,
-} from '@/components/ui/menu';
-import {
-  DialogActionTrigger,
-  DialogBody,
-  DialogCloseTrigger,
+  
   DialogContent,
-  DialogFooter,
-  DialogHeader,
+  
   DialogRoot,
-  DialogTitle,
+  
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { IoHeart, IoHeartOutline, IoEllipsisVertical } from "react-icons/io5";
+import { IoHeart, IoHeartOutline} from "react-icons/io5";
 import { LuImage } from "react-icons/lu";
 import { useThreadStore } from "@/useThreadStore";
 // import { useUser } from "@/userContext";
 // Define types for Post and Reply
-interface Reply {
+interface Author {
   id: number;
   username: string;
-  avatar: string;
-  text: string;
+  profile_pic: string;
+}
+
+
+interface Reply {
+  id: number,
+      content: string,
+      replyImage: string,
+      createdAt: string,
+      user: {
+          id: number,
+          username: string,
+          profile_pic: string
+      }
+}
+
+
+
+interface Thread {
+  id: number;
+  author: Author;
+  content: string;
   createdAt: string;
+  image?: string;
+  isLikedByCurrentUser: boolean;
+  likeCount: number;
+  replies: Reply[];
 }
 
 interface Post {
-  id: number;
-  username: string;
-  avatar: string;
-  text: string;
-  createdAt: string;
-  replies: Reply[];
+id: number;
+thread: Thread;
 }
 
 function DetailedPost() {
@@ -61,13 +73,12 @@ function DetailedPost() {
   const {
       isLikedByUser,
       fetchThreads,
-      threads,
+      
       content,
       setContent,
       setImageFile,
       handleReply,
-      handleEdit,
-      handleDelete,
+      
       toggleLike,
       getLikeCount,
       fetchThreadbyId,
@@ -92,61 +103,8 @@ function DetailedPost() {
       fetchThreads();
   }, []);
 
-  // useEffect(() => {
-  //   if (postId) {
-  //     loadLikeStates();
-  //   }
-  // }, [postId]);
-
   
-
   
-
-  // Handle adding a reply
-  // const handleReply = () => {
-  //   const token = localStorage.getItem("token");
-  
-  //   if (!replyText.trim()) {
-  //     console.error("Reply text cannot be empty.");
-  //     return;
-  //   }
-  
-  //   if (!token) {
-  //     console.error("Token is missing or invalid.");
-  //     return;
-  //   }
-  
-  //   axios
-  //     .post(
-  //       `http://localhost:3000/api/thread/reply`,
-  //       {
-  //         content: replyText,
-  //         threadId: postId,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           'Content-Type': 'application/json',
-  //         },
-  //       }
-  //     )
-  //     .then((response) => {
-  //       setPost((prev) => {
-  //         // Ensure `prev` is never null or undefined
-  //         if (!prev) return null;
-  
-  //         return {
-  //           ...prev,
-  //           thread: {
-  //             ...prev.thread,
-  //             replies: [...(prev.thread.replies || []), response.data],
-  //           },
-  //         };
-  //       });
-  //       setReplyText("");
-  //     })
-  //     .catch((error) => console.error("Error posting reply:", error));
-  // };
 
   const handleReplySubmit = async () => {
     if (!post?.thread.id) {
@@ -172,8 +130,20 @@ function DetailedPost() {
     
     await toggleLike(post.thread.id.toString());
     // Refresh the post data to get updated like status
-    const updatedPost = await fetchThreadbyId(postId);
-    setPost(updatedPost);
+    if (!postId) {
+      console.error("Invalid postId: postId is null or undefined.");
+      return;
+    }
+    try{
+      const updatedPost = await fetchThreadbyId(postId);
+      if(updatedPost){
+          setPost(updatedPost);
+      }else{
+          console.error("updated post is null or undefined");
+      }
+    }catch (error){
+        console.log("Failed to fetch updated post: ", error)
+    }
   };
   
   
@@ -184,13 +154,13 @@ function DetailedPost() {
     <Box maxW="600px" mx="auto" p="4">
       {/* Post Header */}
       <HStack gap="4" alignItems="flex-start">
-        <Avatar src={post.avatar} name={post?.thread.author.username} />
+        <Avatar src={post.thread.author.profile_pic} name={post.thread.author.username} />
         <Box>
-          <Text fontWeight="bold">{post?.thread.author.username}</Text>
+          <Text fontWeight="bold">{post.thread.author.username}</Text>
           <Text fontSize="sm" color="gray.500">
             {new Date(post?.thread.createdAt).toLocaleString()}
           </Text>
-          <Text mt="2">{post?.thread.content}</Text>
+          <Text mt="2">{post.thread.content}</Text>
           
           {post?.thread.image && (
             <DialogRoot>
@@ -263,7 +233,7 @@ function DetailedPost() {
       <VStack align="stretch" gap="4">
         {post?.thread.replies.map((reply) => (
           <HStack key={reply.id} alignItems="flex-start" gap="4">
-            <Avatar src={reply.avatar} name={reply?.user?.username} />
+            <Avatar src={reply.user.profile_pic} name={reply?.user?.username} />
             <Box>
               <Text fontWeight="bold">
                 {reply?.user?.username}
@@ -347,7 +317,13 @@ function DetailedPost() {
                 accept="image/*"
                 style={{ display: "none" }}
                 name="image"
-                onChange={(e) => setImageFile(e.target.files[0])}
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setImageFile(e.target.files[0]);
+                  } else {
+                    console.error("No file selected");
+                  }
+                }}
               />
             </IconButton>
           </HStack>
