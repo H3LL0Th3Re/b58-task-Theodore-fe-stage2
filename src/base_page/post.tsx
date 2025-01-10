@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   Box,
-  VStack,
   HStack,
   Button,
   Text,
@@ -121,7 +120,14 @@ function Posts() {
               accept="image/*"
               style={{ display: "none" }}
               name="image"
-              onChange={(e) => setImageFile(e.target.files[0])}
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setImageFile(e.target.files[0]);
+                } else {
+                  console.error("No file selected");
+                }
+              }
+              }
             />
           </IconButton>
 
@@ -211,7 +217,13 @@ function Posts() {
                                       accept="image/*"
                                       style={{ display: "none" }}
                                       onChange={(e) =>
-                                        setImageFile(e.target.files[0])
+                                        {
+                                          if (e.target.files && e.target.files[0]) {
+                                            setImageFile(e.target.files[0]);
+                                          } else {
+                                            console.error("No file selected");
+                                          }
+                                        }
                                       }
                                     />
                                   </IconButton>
@@ -229,7 +241,7 @@ function Posts() {
                                   </DialogActionTrigger>
                                   <Button
                                     onClick={() =>
-                                      handleEditAndReset(post.id)
+                                      handleEditAndReset(post.id.toString())
                                     }
                                   >
                                     Save
