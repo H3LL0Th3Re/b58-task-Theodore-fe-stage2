@@ -1,21 +1,24 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': resolve(__dirname, './src'),
+      '@': '/src',
+      '@components': '/src/components',
+      '@authComponents': '/src/features/auth/components',
+      '@types': '/src/features/auth/types',
     },
   },
-  build: {
-    outDir: 'dist',
-    sourcemap: true
-  }
-})
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+      exclude: ['node_modules/', 'src/test/**/*'],
+    },
+  },
+});
