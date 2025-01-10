@@ -37,21 +37,42 @@ import { LuImage } from "react-icons/lu";
 import { useThreadStore } from "@/useThreadStore";
 // import { useUser } from "@/userContext";
 // Define types for Post and Reply
+
+interface Author {
+    id: number;
+    username: string;
+    profile_pic: string;
+}
+
+
 interface Reply {
-  id: number;
-  username: string;
-  avatar: string;
-  text: string;
-  createdAt: string;
+    id: number,
+        content: string,
+        replyImage: string,
+        createdAt: string,
+        user: {
+            id: number,
+            username: string,
+            profile_pic: string
+        }
+}
+
+
+
+interface Thread {
+    id: number;
+    author: Author;
+    content: string;
+    createdAt: string;
+    image?: string;
+    isLikedByCurrentUser: boolean;
+    likeCount: number;
+    replies: Reply[];
 }
 
 interface Post {
   id: number;
-  username: string;
-  avatar: string;
-  text: string;
-  createdAt: string;
-  replies: Reply[];
+  thread: Thread;
 }
 
 function DetailedImage() {
@@ -122,7 +143,7 @@ function DetailedImage() {
     const updatedPost = await fetchThreadbyId(postId);
     setPost(updatedPost);
   };
-  
+  console.log("post: ", post);
   
   // console.log(setImageFile);
   if (!post) return <Text>Loading...</Text>;
@@ -131,7 +152,7 @@ function DetailedImage() {
     <Box maxW="600px" mx="auto" p="4">
       {/* Post Header */}
       <HStack gap="4" alignItems="flex-start">
-        <Avatar src={post.avatar} name={post?.thread.author.username} />
+        <Avatar src={post.thread.author.profile_pic} name={post?.thread.author.username} />
         <Box>
           <Text fontWeight="bold">{post?.thread.author.username}</Text>
           <Text fontSize="sm" color="gray.500">
@@ -197,7 +218,7 @@ function DetailedImage() {
             colorScheme="blue"
             variant="ghost"
           >
-            💬 Reply
+            {post.thread.replies.length || 0} 💬 Reply
           </Button>
         </Flex>
 
@@ -210,7 +231,7 @@ function DetailedImage() {
       <VStack align="stretch" gap="4">
         {post?.thread.replies.map((reply) => (
           <HStack key={reply.id} alignItems="flex-start" gap="4">
-            <Avatar src={reply.avatar} name={reply?.user?.username} />
+            <Avatar src={reply.user?.profile_pic} name={reply?.user?.username} />
             <Box>
               <Text fontWeight="bold">
                 {reply?.user?.username}
