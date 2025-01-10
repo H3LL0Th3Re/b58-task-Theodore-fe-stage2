@@ -22,11 +22,16 @@ interface UserState {
   fetchUser: () => Promise<void>;
   updateUser: (userData: FormData) => Promise<void>;
   fetchSuggestedUsers: () => Promise<void>;
-  toggleFollowUser: (userId: string, isFollowed: boolean) => Promise<void>;
+  // toggleFollowUser: (userId: string) => Promise<void>;
+  toggleFollowUser: (userId: string) => Promise<Response | undefined>;
   login: (token: string) => void;
   logout: () => void;
 }
 
+interface JwtPayload {
+  id: string;
+  [key: string]: any;
+}
 
 export const useStore = create<UserState>()(
   persist(
@@ -85,7 +90,7 @@ export const useStore = create<UserState>()(
         }
       },
 
-      toggleFollowUser: async (userId: string, isFollowed: boolean) => {
+      toggleFollowUser: async (userId: string) => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No authentication token");
 
@@ -116,7 +121,7 @@ export const useStore = create<UserState>()(
                 (user) => user.id !== userId
               ),
             }));
-            return response.data;
+            return response;
           }
         } catch (error) {
           console.error("Error toggling follow:", error);
@@ -126,7 +131,10 @@ export const useStore = create<UserState>()(
 
       updateUser: async (formData: FormData) => {
         const token = localStorage.getItem("token");
-        const userId = jwtDecode(token).id;
+        if(!token){
+          return;
+        }
+        const userId = (jwtDecode(token) as JwtPayload).id;
         if (!token) throw new Error("No authentication token");
     
         try {
@@ -189,70 +197,4 @@ export const useStore = create<UserState>()(
 );
 
 
-// export const useUserStore = create<UserState>((set) => ({
-//   user: null,
-//   isAuthenticated: !!localStorage.getItem("token"),
 
-//   fetchUser: async (token: string) => {
-//     try {
-//       const response = await axios.get("http://localhost:3000/api/users", {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//           "Content-Type": "application/json",
-//         },
-//       });
-
-//       set({
-//         user: response.data,
-//         isAuthenticated: true,
-//       });
-//     } catch (error) {
-//       console.error("Error fetching user data:", error);
-//       set({
-//         user: null,
-//         isAuthenticated: false,
-//       });
-//       localStorage.removeItem("token");
-//     }
-//   },
-
-//   updateUser: async (userData: Partial<User>) => {
-//     const token = localStorage.getItem("token");
-//     if (!token) throw new Error("No token found");
-
-//     try {
-//       const response = await axios.put(
-//         "http://localhost:3000/api/users",
-//         userData,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
-
-//       set((state) => ({
-//         user: { ...state.user, ...response.data } as User,
-//       }));
-
-//       return response.data;
-//     } catch (error) {
-//       console.error("Error updating user data:", error);
-//       throw error;
-//     }
-//   },
-
-//   login: (token: string) => {
-//     localStorage.setItem("token", token);
-//     set({ isAuthenticated: true });
-//   },
-
-//   logout: () => {
-//     localStorage.removeItem("token");
-//     set({
-//       user: null,
-//       isAuthenticated: false,
-//     });
-//   },
-// }));
