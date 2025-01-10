@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Text, Flex, Button, Center, Spinner } from "@chakra-ui/react";
 import { Avatar } from "@/components/ui/avatar";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import * as Tabs from "@radix-ui/react-tabs";
 import Swal from "sweetalert2";
 import { useFollowStore } from "../FollowStore";
@@ -16,23 +16,27 @@ type User = {
   isFollowed?: boolean;
 };
 
+interface JwtPayload {
+  id: string;
+  [key: string]: any;
+}
 
 const FollowPage = () => {
   const defaultProfilePic = "https://tse1.mm.bing.net/th?id=OIP.Br5ihkw7BCVc-bdbrr-PxgHaHa&pid=Api&P=0&h=180";
   const [tab, setTab] = useState("Following");
   const [loading, setLoading] = useState<boolean>(false);
-  
+
   const { users, setUsers, toggleUserFollow } = useFollowStore();
 
-  const token = localStorage.getItem("token");
-  const decodedToken: any = jwtDecode(token!);
-  const currentUserId = decodedToken.id;
+  
 
   const toggleFollow = async (userId: string) => {
     try {
       const token = localStorage.getItem("token");
-      const decodedToken: any = jwtDecode(token!);
-      const currentUserId = decodedToken.userId;
+      if(!token){
+        return;
+      }
+      const currentUserId = (jwtDecode(token) as JwtPayload).id;
 
       // Optimistically update the UI
       toggleUserFollow(userId);
@@ -50,14 +54,14 @@ const FollowPage = () => {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         // Revert the optimistic update if the request failed
         toggleUserFollow(userId);
         Swal.fire({
           title: "Error",
           text: data.message || "Failed to update follow status",
-          icon: "error"
+          icon: "error",
         });
         return;
       }
@@ -65,7 +69,7 @@ const FollowPage = () => {
       Swal.fire({
         title: "Success",
         text: data.message,
-        icon: "success"
+        icon: "success",
       });
     } catch (error) {
       // Revert the optimistic update on error
@@ -75,6 +79,12 @@ const FollowPage = () => {
   };
 
   const fetchData = async () => {
+
+    const token = localStorage.getItem("token");
+      if(!token){
+        return;
+      }
+      const currentUserId = (jwtDecode(token) as JwtPayload).id;
     if (!currentUserId) return;
     setLoading(true);
 
@@ -90,10 +100,11 @@ const FollowPage = () => {
         { headers }
       );
       const data = await response.json();
+
       // Add isFollowing property to each user
-      const usersWithFollowState = data.map((user:User) => ({
+      const usersWithFollowState = data.map((user: User) => ({
         ...user,
-        isFollowing: tab === "Following" ? true : user.isFollowing
+        isFollowing: tab === "Following" ? true : user.isFollowing,
       }));
       setUsers(usersWithFollowState);
     } catch (error) {
@@ -124,7 +135,11 @@ const FollowPage = () => {
             justify="space-between"
           >
             <Flex align="center" gap={3}>
-              <Avatar src={user?.profile_pic || defaultProfilePic} name={user.username} size="sm" />
+              <Avatar
+                src={user?.profile_pic || defaultProfilePic}
+                name={user.username}
+                size="sm"
+              />
               <Box>
                 <Text fontWeight="bold" fontSize="sm" color="white">
                   {user.fullname}
@@ -156,8 +171,7 @@ const FollowPage = () => {
           Follows
         </Text>
       </Flex>
-      <Tabs.Root value={tab} onValueChange={(value:string) => setTab(value)}>
-        {/* Tabs.List remains the same */}
+      <Tabs.Root value={tab} onValueChange={(value: string) => setTab(value)}>
         <Tabs.List
           style={{
             display: "flex",
