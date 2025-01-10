@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { ThreadsType } from '@/types/threads.types';
 import { getAllThreads } from '@/services/thread.services';
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode, JwtPayload} from 'jwt-decode';
 import axios from 'axios';
 import Swal from 'sweetalert2'
 
@@ -11,7 +11,7 @@ interface ThreadState {
   content: string;
   imageFile: File | null;
   currentThread: any;
-  imagePreview: "" | null;
+  imagePreview: string | null;
   
   setThreads: (threads: ThreadsType[]) => void;
   setContent: (content: string) => void;
@@ -30,6 +30,14 @@ interface ThreadState {
   fetchThreadbyId: (threadId: string) => Promise<any | null>;
 }
 
+interface CustomJwtPayload extends JwtPayload {
+    id: number;
+}
+
+interface Like {
+    userId: number;
+}
+
 export const useThreadStore = create<ThreadState>((set, get) => {
   const savedLikeCounts = JSON.parse(localStorage.getItem('likeCounts') || '{}');
 
@@ -44,13 +52,13 @@ export const useThreadStore = create<ThreadState>((set, get) => {
     setThreads: (threads) => set({ threads }),
     setContent: (content) => set({ content }),
     setImageFile: (file) => {
-        let preview = null;
+        let preview: string | null = null;
         if (file) {
-            preview = URL.createObjectURL(file); // Generate a preview URL
+          preview = URL.createObjectURL(file);
         }
         set({ imageFile: file, imagePreview: preview });
     },
-    
+
     setReply: (content) => set({ content }),
 
     loadLikeCounts: () => {
@@ -83,8 +91,8 @@ export const useThreadStore = create<ThreadState>((set, get) => {
             if (data.threads && Array.isArray(data.threads)) {
                 set({threads: data.threads});
                 const newLikeCounts: Record<string, number> = {};
-                data.threads.forEach(thread => {
-                    newLikeCounts[thread.id] = thread.likes?.length || 0;
+                data.threads.forEach((thread: ThreadsType) => {
+                    newLikeCounts[thread.id] = Array.isArray(thread.likes) ? thread.likes.length : 0;
                 });
                 
                 localStorage.setItem('likeCounts', JSON.stringify(newLikeCounts));
@@ -104,9 +112,10 @@ export const useThreadStore = create<ThreadState>((set, get) => {
 
     isLikedByUser: (threadId: string) => {
       const token = localStorage.getItem('token');
-      if (!token) return false;
       
-      const userId = jwtDecode(token).id;
+      if (!token) return false;
+      const decoded = jwtDecode<CustomJwtPayload>(token);
+      const userId = decoded.id;
       // Try to find thread in both threads array and currentThread
       const threadFromList = get().threads.find(t=> t.id.toString() == threadId);
       const currentThread = get().currentThread?.thread;
@@ -116,11 +125,11 @@ export const useThreadStore = create<ThreadState>((set, get) => {
     //   console.log("Current user ID:", userId);
     //   console.log("Thread likes:", thread?.likes);
       if(!thread || !thread.likes) return false;
-      const isLiked = thread?.likes?.some(like => like.userId === userId);
+      const isLiked = thread?.likes?.some((like: Like) => like.userId === userId);
       console.log("Is liked:", isLiked);
       if (!thread || !thread.likes) return false;
       
-      return thread.likes.some(like => like.userId === userId);
+      return thread.likes.some((like: Like) => like.userId === userId);
     },
 
     fetchThreads: async () => {
@@ -134,8 +143,8 @@ export const useThreadStore = create<ThreadState>((set, get) => {
         set({ threads: threads_list });
         
         const newLikeCounts: Record<string, number> = {};
-        threads_list.forEach(thread => {
-          newLikeCounts[thread.id] = thread.likes?.length || 0;
+        threads_list.forEach((thread: ThreadsType) => {
+            newLikeCounts[thread.id] = Array.isArray(thread.likes) ? thread.likes.length : 0;
         });
         
         localStorage.setItem('likeCounts', JSON.stringify(newLikeCounts));
@@ -157,8 +166,8 @@ export const useThreadStore = create<ThreadState>((set, get) => {
         set({currentThread: response.data});
         // Update both threads array and currentThread
         set((state) => ({
-          threads: state.threads.map(thread => 
-            thread.id === threadId ? response.data.thread : thread
+          threads: state.threads.map((thread: ThreadsType) => 
+            (thread.id).toString() === threadId ? response.data.thread : thread
         ),
         }));
 
@@ -194,7 +203,7 @@ export const useThreadStore = create<ThreadState>((set, get) => {
       const token = localStorage.getItem("token");
       if (!token) return;
       
-      const decodedToken = jwtDecode(token);
+      const decodedToken = jwtDecode<CustomJwtPayload>(token);
       const currentUserId = decodedToken.id;
 
       const formData = new FormData();
@@ -366,7 +375,7 @@ export const useThreadStore = create<ThreadState>((set, get) => {
       
           if (response.ok) {
             set((state) => ({
-              threads: state.threads.filter(thread => thread.id !== threadId)
+              threads: state.threads.filter((thread:ThreadsType) => (thread.id).toString() !== threadId)
             }));
             
             // Show success message
@@ -432,30 +441,10 @@ export const useThreadStore = create<ThreadState>((set, get) => {
             }
           }));
   
-          // Update localStorage
           localStorage.setItem('likeCounts', JSON.stringify(get().likeCounts));
-        // await get().fetchThreadbyId(postId);
-        
-        // Update like count after successful API call
-        // set((state) => {
-        //   const currentCount = state.likeCounts[postId] || 0;
-        //   const isCurrentlyLiked = state.isLikedByUser(postId);
-        //   const newCount = state.getLikeCount(postId);
-          
-        //   const newLikeCounts = {
-        //     ...state.likeCounts,
-        //     [postId]: newCount
-        //   };
-          
-        //   localStorage.setItem('likeCounts', JSON.stringify(newLikeCounts));
-          
-        //   return { likeCounts: newLikeCounts };
-        // });
 
       } catch (error) {
         console.error('Error toggling like:', error);
-        // Revert optimistic update on error
-        // get().loadLikeCounts();
       }
     }
   };
