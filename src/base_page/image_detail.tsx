@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Text,
@@ -7,7 +7,6 @@ import {
   VStack,
   HStack,
   Image,
-  Textarea,
   IconButton,
   Flex
 } from "@chakra-ui/react";
@@ -16,23 +15,14 @@ import { Avatar } from "@/components/ui/avatar"
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
-  MenuContent,
-  MenuItem,
-  MenuRoot,
-  MenuTrigger,
-} from '@/components/ui/menu';
-import {
-  DialogActionTrigger,
-  DialogBody,
-  DialogCloseTrigger,
+  
   DialogContent,
-  DialogFooter,
-  DialogHeader,
+  
   DialogRoot,
-  DialogTitle,
+  
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { IoHeart, IoHeartOutline, IoEllipsisVertical } from "react-icons/io5";
+import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import { LuImage } from "react-icons/lu";
 import { useThreadStore } from "@/useThreadStore";
 // import { useUser } from "@/userContext";
@@ -82,13 +72,10 @@ function DetailedImage() {
   const {
       isLikedByUser,
       fetchThreads,
-      threads,
       content,
       setContent,
       setImageFile,
       handleReply,
-      handleEdit,
-      handleDelete,
       toggleLike,
       getLikeCount,
       fetchThreadbyId,
@@ -174,11 +161,11 @@ function DetailedImage() {
                 </Box>
               </DialogTrigger>
               <DialogContent style={{
-                  width: '80%', // Set dialog width (adjust as needed)
-                  maxWidth: '1200px', // Set a maximum width for responsiveness
-                  height: 'auto', // Allow dynamic height based on content
-                  padding: '16px', // Add padding for inner spacing
-                  borderRadius: '16px', // Round the corners
+                  width: '80%', 
+                  maxWidth: '1200px', 
+                  height: 'auto', 
+                  padding: '16px', 
+                  borderRadius: '16px', 
                 }}>
                 <Box mt="4" rounded="lg" overflow="hidden">
                   <Image
@@ -274,16 +261,6 @@ function DetailedImage() {
               </DialogRoot>
             )}
             </Box>
-            {/* <Box mt="4" rounded="lg" overflow="hidden">
-
-              <Image
-                src={reply.replyImage}
-                alt="Post"
-                width= "100%"
-                objectFit= "cover"
-                borderRadius= "8px"
-              />
-            </Box> */}
           </HStack>
           
         ))}
