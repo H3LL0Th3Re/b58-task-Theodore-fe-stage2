@@ -27,7 +27,7 @@ interface ThreadState {
   loadLikeCounts: () => void;
   getLikeCount: (threadId: string) => number;
   isLikedByUser: (threadId: string) => boolean;
-  fetchThreadbyId: (threadId: string) => Promise<void>;
+  fetchThreadbyId: (threadId: string) => Promise<any | null>;
 }
 
 export const useThreadStore = create<ThreadState>((set, get) => {
@@ -149,7 +149,7 @@ export const useThreadStore = create<ThreadState>((set, get) => {
       const token = localStorage.getItem('token');
       if(!token){
         console.error("log in first");
-        return;
+        return null;
       }
       try {
         const response = await axios.get(`http://localhost:3000/api/thread/${threadId}`);
@@ -175,6 +175,7 @@ export const useThreadStore = create<ThreadState>((set, get) => {
         return response.data;
       } catch(error) {
         console.error("Error fetching thread:", error);
+        return null;
       }
     },
 
