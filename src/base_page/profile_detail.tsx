@@ -38,6 +38,10 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { formatDistanceToNow } from 'date-fns';
 
+
+
+
+
 interface JwtPayload {
   id: string;
   [key: string]: any;
@@ -522,7 +526,7 @@ const ProfileDetail = () => {
                               variant="ghost"
                               onClick={() => navigate(`post-detail/${post.id}`)} // Redirect to post detail page
                             >
-                              {post?.replies?.length || 0} 💬 Reply
+                              {Array.isArray(post.replies) ? post.replies.length : 0} 💬 Reply
                             </Button>
                         </Flex>
                       </Flex>
