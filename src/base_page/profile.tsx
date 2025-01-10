@@ -30,8 +30,12 @@ import {
 import { UsersType } from '@/types/users.types';
 import { useStore } from '@/useStore';
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
-import Swal from 'sweetalert2'
+import {jwtDecode, JwtPayload} from "jwt-decode";
+import Swal from 'sweetalert2';
+
+interface CustomJwtPayload extends JwtPayload {
+  id: string;
+}
 function Profile() {
   const { user, updateUser, fetchUser } = useStore();
   const [followCounts, setFollowCounts] = useState({ followers: 0, following: 0 });
@@ -98,7 +102,7 @@ function Profile() {
         if(!token){
           return;
         }
-        const current_user = jwtDecode(token).id;
+        const current_user = (jwtDecode(token) as CustomJwtPayload).id;
         const response = await fetch(`http://localhost:3000/api/users/${current_user}/suggest-users`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -117,7 +121,7 @@ function Profile() {
     fetchSuggestedUsers();
   }, []);
 
-  const getFollowCounts = async (userId) => {
+  const getFollowCounts = async (userId: string) => {
     const token = localStorage.getItem("token");
     const response = await axios.get(`http://localhost:3000/api/users/${userId}/follow-counts`, {
       headers: {
@@ -134,7 +138,7 @@ function Profile() {
         if(!token){
           return;
         }
-        const current_user = jwtDecode(token).id;
+        const current_user = (jwtDecode(token) as CustomJwtPayload).id;
       try {
         console.log("the user: ", current_user);
         const counts = await getFollowCounts(current_user.toString());
