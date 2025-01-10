@@ -7,9 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': '/src',
-      '@components': '/src/components',
-      '@authComponents': '/src/features/auth/components',
-      '@types': '/src/features/auth/types',
     },
   },
   test: {
