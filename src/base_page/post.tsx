@@ -252,7 +252,7 @@ function Posts() {
                             </DialogRoot>
                             <MenuItem
                               value="delete"
-                              onClick={() => handleDelete(post.id)}
+                              onClick={() => handleDelete(post.id.toString())}
                             >
                               Delete
                             </MenuItem>
@@ -302,7 +302,7 @@ function Posts() {
                       navigate(`/main/post-detail/${post.id}`)
                     }
                   >
-                    {post?.replies?.length || 0} 💬 Reply
+                    {Array.isArray(post.replies) ? post.replies.length : 0} 💬 Reply
                   </Button>
                 </Flex>
               </Flex>
