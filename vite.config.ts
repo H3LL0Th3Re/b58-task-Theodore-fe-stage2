@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -11,11 +10,11 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setup.ts',
+    environment: 'jsdom', // Specify "jsdom" or "node"
+    setupFiles: './src/setup.ts', // Optional: Your test setup file
     coverage: {
-      reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'src/test/**/*'],
+      reporter: ['text', 'json', 'html'], // Optional: Coverage reporters
+      exclude: ['node_modules/', 'src/test/**/*'], // Files to exclude from coverage
     },
   },
 });
