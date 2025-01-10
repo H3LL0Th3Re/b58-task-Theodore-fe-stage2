@@ -1,7 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import axios from "axios";
-import { set } from "react-hook-form";
-import { boolean } from "zod";
+import React, { createContext, useContext, useState, ReactNode } from "react";
+
 // Define User interface
 interface User {
   fullname: string;
