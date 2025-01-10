@@ -237,7 +237,7 @@ function DetailedImage() {
                 {new Date(reply.createdAt).toLocaleString()}
               </Text>
               <Text mt="1">{reply.content}</Text>
-              {reply.replyImage != null && reply.replyImage != "" &&  (
+              {reply.replyImage &&  (
                 <DialogRoot>
                   <DialogTrigger asChild>
                     <Box mt="4" rounded="lg" overflow="hidden">
