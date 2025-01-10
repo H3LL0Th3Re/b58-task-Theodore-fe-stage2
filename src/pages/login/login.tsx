@@ -11,7 +11,7 @@ import {
   Heading,
   VStack,
 } from "@chakra-ui/react";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import { FormControl} from "@chakra-ui/form-control";
 import { toaster } from "@/components/ui/toaster";
 import { z } from "zod";
 import { useStore } from "@/useStore";
@@ -29,11 +29,11 @@ const Login: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const [loading, setLoading] = useState(false);
+  
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (data: LoginFormInputs) => {
-    setLoading(true);
+    
     setError(null);
     navigate("/login");
 
@@ -64,8 +64,6 @@ const Login: React.FC = () => {
     } catch (err: any) {
       console.error("Error:", err);
       setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -94,7 +92,7 @@ const Login: React.FC = () => {
           Login to Circle
         </Text>
         <form onSubmit={handleSubmit(handleLogin)}>
-          <VStack spacing={4} align="stretch">
+          <VStack gap={4} align="stretch">
             <FormControl id="username" isRequired>
               <Input
                 {...register("username")}
