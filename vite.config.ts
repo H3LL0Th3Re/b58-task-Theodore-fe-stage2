@@ -1,20 +1,16 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+
+
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': '/src',
-    },
-  },
   test: {
     globals: true,
-    environment: 'jsdom', // Specify "jsdom" or "node"
-    setupFiles: './src/setup.ts', // Optional: Your test setup file
+    environment: 'jsdom',
+    setupFiles: './src/setup.ts',
     coverage: {
-      reporter: ['text', 'json', 'html'], // Optional: Coverage reporters
-      exclude: ['node_modules/', 'src/test/**/*'], // Files to exclude from coverage
+      reporter: ['text', 'json', 'html'],
+      exclude: ['node_modules/', 'src/test/**/*'],
     },
   },
 });
+
