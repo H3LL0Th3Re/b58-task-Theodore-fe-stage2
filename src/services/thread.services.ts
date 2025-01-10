@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 const apiURL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/"
 export const getAllThreads = async (token: string) => {
     try{
