@@ -37,6 +37,11 @@ import { jwtDecode } from 'jwt-decode';
 
 import Swal from 'sweetalert2';
 import { formatDistanceToNow } from 'date-fns';
+
+interface JwtPayload {
+  id: string;
+  [key: string]: any;
+}
 const ProfileDetail = () => {
   const { user, updateUser, fetchUser } = useStore();
   
@@ -91,8 +96,7 @@ const ProfileDetail = () => {
 
 
   
-  const token = localStorage.getItem("token");
-  const current_user = jwtDecode(token).id;
+  
 
   useEffect(() => {
     const initializeData = async () => {
@@ -108,7 +112,7 @@ const ProfileDetail = () => {
     initializeData();
   }, [fetchUser]);
   
-  const getFollowCounts = async (userId) => {
+  const getFollowCounts = async (userId: string) => {
     const token = localStorage.getItem("token");
     const response = await axios.get(`http://localhost:3000/api/users/${userId}/follow-counts`, {
       headers: {
@@ -122,7 +126,12 @@ const ProfileDetail = () => {
   useEffect(() => {
       const fetchFollowCounts = async () => {
         try {
-          console.log("the user: ", current_user);
+          // console.log("the user: ", current_user);
+          const token = localStorage.getItem("token");
+          if(!token){
+            return;
+          }
+          const current_user = (jwtDecode(token) as JwtPayload).id;
           const counts = await getFollowCounts(current_user.toString());
           setFollowCounts({
             followers: counts.followersCount,
@@ -130,11 +139,12 @@ const ProfileDetail = () => {
           });
         } catch (error) {
           console.error("Failed to fetch follow counts:", error);
+          setError("Failed to fetch follow counts");
         }
       };
     
       fetchFollowCounts();
-  }, [current_user]);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
@@ -245,7 +255,7 @@ const ProfileDetail = () => {
   
   
   const getLikes = (post: ThreadsType): number => {
-    if (!post || !post.likes) return 0;
+    if (!post || !Array.isArray(post.likes)) return 0;
     return post.likes.length;
   };
 
@@ -263,6 +273,13 @@ const ProfileDetail = () => {
 
   const [tabValue, setTabValue] = useState('recent_post');
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
   // console.log(threads);
 
 
