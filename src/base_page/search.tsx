@@ -19,6 +19,19 @@ interface JwtPayload {
   id: string;
   [key: string]: any;
 }
+
+interface User{
+  id: string;
+  fullname: string;
+  username: string;
+  email: string;
+  bio: string | null;
+  profile_pic: string | null;
+  banner_pic: string | null;
+  isFollowed: boolean; 
+  createdAt?: string;
+  updatedAt?: string;
+}
 function SearchPage() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,7 +60,7 @@ function SearchPage() {
   
       if (response.ok) {
         const data = await response.json();
-        const filteredResults = data.filter((user: any) => user.id !== currentUserId);
+        const filteredResults = data.filter((user: User) => user.id !== currentUserId);
         
         // Get the current follow states from existing search results
         const existingFollowStates = new Map(
@@ -55,7 +68,7 @@ function SearchPage() {
         );
   
         // Preserve follow states when updating search results
-        const updatedResults = filteredResults.map(user => ({
+        const updatedResults = filteredResults.map((user: User) => ({
           ...user,
           isFollowed: existingFollowStates.has(user.id) 
             ? existingFollowStates.get(user.id)  // Keep existing follow state
