@@ -1,6 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+// import path from 'path';
+import { resolve } from 'path'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // Vite config
 export default defineConfig({
@@ -8,7 +14,8 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // Resolve alias for '@'
+      // '@': path.resolve(__dirname, './src'), // Resolve alias for '@'
+      '@': resolve(__dirname, './src'),
     },
   },
 
