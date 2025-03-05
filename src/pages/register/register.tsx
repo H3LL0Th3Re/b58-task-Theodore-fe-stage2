@@ -47,7 +47,7 @@ function Register() {
     setSuccess(false);
     
     try {
-      const response = await fetch('https://b58-task-theodore-fe-stage2.vercel.app/api/auth/register', {
+      const response = await fetch('https://b58-task-theodore-be-stage2.vercel.app/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
