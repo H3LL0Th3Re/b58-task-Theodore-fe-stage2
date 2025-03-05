@@ -1,10 +1,10 @@
 "use client"
-
+import React from "react"
 import type { IconButtonProps } from "@chakra-ui/react"
 import { ClientOnly, IconButton, Skeleton } from "@chakra-ui/react"
 import { ThemeProvider, useTheme } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
-import * as React from "react"
+// import * as React from "react"
 import { LuMoon, LuSun } from "react-icons/lu"
 
 export interface ColorModeProviderProps extends ThemeProviderProps {}
